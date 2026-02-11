@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styling.css">
+    <title>FinTech Stress Tester</title>
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        
+        <aside class="config-panel">
+            <h2>Scenario Settings</h2> 
+            
+            <div class="macro-group">
+                <label for="market-move">Market Overall (S&P 500) %</label>
+                <input type="number" id="market-move" min = "-100" placeholder="e.g. -10">
+
+                <label for="Risk free rate">Risk free rate %</label>
+                <input type="number" id="risk_free_return" placeholder="e.g. 3.5">
+
+                <label for="total-investment">Total Investment ($)</label>
+                <input type="tel" id="total-investment" placeholder="Optional, (Numbers only)">
+            </div>
+
+            <hr>
+
+            <div class="risk-group">
+                <label>Investor Risk Tolerance (1-10)</label>
+                <input type="range" id="risk-tolerance" min="1" max="10" value="5">
+                <p>Risk tolerance: <span id="tolerance-val">5</span>/10</p>
+            </div>
+
+            <div class="action-btns">
+                <button type="button" id="runBtn" class="btn-run">Run Stress Test</button>
+                <button type="button" id="resetBtn" class="btn-reset">Reset All</button>
+            </div>
+        </aside>
+
+        <main class="analysis-area">
+            
+            <section class="portfolio-input-card">
+                <div class="section-header">
+                    <h3>Portfolio Composition</h3>
+                    <div class="crud-btns">
+                        <button type="button" id="addSectorBtn">+ Sector</button>
+                        <button type="button" id="deleteSectorBtn">- Sector</button>
+                    </div>
+                </div>
+                
+                <div id="portfolio-inputs">
+                    <div class="sector-row">
+                        <input type="text" class="sector-name" placeholder="Sector Name">
+                        <input type="number" class="sector-weight" min="0" placeholder="Weight %">
+                        <input type="number" class="sector_SD" placeholder="Standard deviation (Optional)">
+                    </div>
+                </div>
+            </section>
+
+            <section class="shock-input-card">
+                <div class="section-header">
+                    <h3>Systematic Risk (Betas)</h3>
+                    <div class="crud-btns">
+                        <button type="button" id="addShockBtn">+ Beta</button>
+                        <button type="button" id="deleteShockBtn">- Beta</button>
+                    </div>
+                </div>
+                <div id="shock_container">
+                    <div class="scenario-controls">
+                        <input type="text" class="target" placeholder="Sector Name">
+                        <input type="number" class="shock" step="0.1" placeholder="Beta " min="-5" max="5" >
+                    </div>
+                </div>
+            </section>
+
+            <section class="output-display">
+               <div class="stats">
+                   <h2 id="resultText">Impact: --</h2>
+                       <p id="adviceText">Recommendation: --</p>
+               </div>
+
+               <div class="pie-container">
+                      <div id="piechart"></div> <div id="label">
+                      </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="analyser_log.js" ></script>
+    <script src="sector_class.js" ></script>
+</body>
+</html>
