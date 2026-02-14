@@ -19,80 +19,117 @@ function check_sign(num){
     return false;
 }
 
-function update_advisor(sec_arr, have_total,p_beta, t_invest, tol,sharpe_ratio){
+function update_advisor(sec_arr, have_total,p_beta, t_invest, tol,sharpe_ratio, market_move){
     const length = sec_arr.length;
     let worst = 0;
     let best = 0;
-    //find best and worst performer that affects the most
-    for (let i = 1; i < length ; i++){
-        if (sec_arr[i].Weighted_r > sec_arr[best].Weighted_r){
-            best = i;
+    let to_short = [];
+    let to_long = [];
+    //classify the stocks first
+    for (let i = 0; i < length; i++) {
+        let stock = sec_arr[i];
+        if (p_beta > tol && stock.Beta > 1.0) {
+            to_short.push(stock.Name);
+        } 
+        else if (p_beta < tol && stock.Beta > 0.5) {
+            to_long.push(stock.Name);
         }
-        if (sec_arr[i].Weighted_r < sec_arr[worst].Weighted_r){
-            worst = i;
-        }
+        if (sec_arr[i].Weighted_r > sec_arr[best].Weighted_r) { best = i; }
+        if (sec_arr[i].Weighted_r < sec_arr[worst].Weighted_r) { worst = i; }
     }
+    //find best and worst performer that affects the most
     let best_per = sec_arr[best].Weighted_r.toFixed(2);
     let worst_per = sec_arr[worst].Weighted_r.toFixed(2);
 
     if (check_sign(best_per)){
-        recommendation.innerHTML += `<br>🚀 <strong>Top Performer:</strong> +${sec_arr[best].Name} (${best_per}%)`;
+        recommendation.innerHTML += `<br>🚀 <strong>Top Performer:</strong> ${sec_arr[best].Name} (+${best_per}%)`;
     }
     else{
-        recommendation.innerHTML += `<br>🚀 <strong>Top Performer:</strong> -${sec_arr[best].Name} (${best_per}%)`;
+        recommendation.innerHTML += `<br>🚀 <strong>Top Performer:</strong> ${sec_arr[best].Name} (${best_per}%)`;
     }
     if(check_sign(worst_per)){
-        recommendation.innerHTML += `<br>📉 <strong>Biggest Drag:</strong> +${sec_arr[worst].Name} (${worst_per}%)`;
+        recommendation.innerHTML += `<br>📉 <strong>Biggest Drag:</strong> ${sec_arr[worst].Name} (+${worst_per}%)`;
     }
     else{
-        recommendation.innerHTML += `<br>📉 <strong>Biggest Drag:</strong> -${sec_arr[worst].Name} (${worst_per}%)`;
+        recommendation.innerHTML += `<br>📉 <strong>Biggest Drag:</strong> ${sec_arr[worst].Name} (${worst_per}%)`;
     }
-    //hedging
-    let action = (p_beta > 0) ? "Short" : "Long" ;
-    let hedge_amount = 0;
-    let hedge_percentage = 0;
-    let suggestion = "";
+    //portfolio risk
+    let risk_label = "";
     if (p_beta > 1.2) {
-    suggestion = "Your portfolio is <strong>aggressive</strong>. This hedge acts as insurance against a market crash.";
+    risk_label = " 🛡️ Your portfolio is <strong>aggressive</strong>. This hedge acts as insurance against a market crash.";
     } 
     else if (p_beta > 0 && p_beta <= 1.2) {
-    suggestion = "Your portfolio is <strong>market-aligned</strong>. This hedge will move you toward a 'Market Neutral' strategy.";
+    risk_label = " 📊 Your portfolio is <strong>market-aligned</strong>. This hedge will move you toward a 'Market Neutral' strategy.";
     }
     else if (p_beta < 0) {
-    suggestion = "Your portfolio is <strong>inverse/Hedged</strong>. This hedge will reduce your bet against the market.";
+    risk_label = " ⚠️ Your portfolio is <strong>inverse/Hedged</strong>. This hedge will reduce your bet against the market.";
     }
     else{
-        suggestion = "Your portfolio is within your risk tolerance";
+        risk_label = " 🛡️ Your portfolio is within your risk tolerance";
     }
-    if (Math.abs(p_beta) > tol){
-        if (have_total){
-        hedge_amount = Math.abs(p_beta * Number(t_invest));
-        recommendation.innerHTML += `<br> 🛡️ ${suggestion} <br> <strong>Action:</strong> ${action} $${hedge_amount.toFixed(0)} worth of a market index.`;;
+    recommendation.innerHTML += `<br> ${risk_label}`;
+    //base on portfolio beta
+    if (p_beta > tol) {
+        let highBetaSectors = [];
+        for (let i = 0; i < sec_arr.length; i++) {
+            if (sec_arr[i].Beta > 1.0) {
+                highBetaSectors.push(sec_arr[i].Name);
+            }
         }
-        else{
-        hedge_percentage = Math.abs(p_beta * 100);
-        recommendation.innerHTML += `<br> 🛡️ ${suggestion} <br> <strong>Action:</strong> ${action} $${hedge_percentage.toFixed(1)}% of your portfolio value.`;
+        if (highBetaSectors.length > 0) {
+            recommendation.innerHTML += `<br> 💡 <strong>Optimization:</strong> To lower your risk to your target level, consider <strong>reducing</strong> your weight in: ${highBetaSectors.join(", ")}.`;
+            if (have_total) {
+            let reduction_estimate = ((p_beta - tol) / p_beta) * Number(t_invest);
+            recommendation.innerHTML += `<br> 💰 <em>Estimated action: Sell approximately <strong>$${reduction_estimate.toFixed(0)}</strong> total from these sectors.</em>`;
+            }
+            else {
+            let reduction_pct = ((p_beta - tol) / p_beta) * 100;
+            recommendation.innerHTML += `<br> 📊 <em>Estimated action: Reduce your total exposure to these sectors by <strong>${reduction_pct.toFixed(1)}%</strong>.</em>`;
+           }
         }
-        if (sec_arr[worst].Weighted_r < -2) { 
-        recommendation.innerHTML += ` <br> 💡 <strong>Strategy:</strong> Since ${sec_arr[worst].Name} is a major drag (${sec_arr[worst].Weighted_r.toFixed(2)}%), consider trimming this position to reduce your overall market sensitivity. 
-        Your biggest liability. Reducing this position could lower your risk.`};
+    } 
+    else if (p_beta < (tol * 0.7)) {
+        let growthSectors = [];
+        for (let i = 0; i < sec_arr.length; i++) {
+            if (sec_arr[i].Beta > 0.5 && sec_arr[i].Beta < 1.5) {
+                growthSectors.push(sec_arr[i].Name);
+            }
+        }
+        
+        if (growthSectors.length > 0) {
+            recommendation.innerHTML += `<br> 🚀 <strong>Optimization:</strong> Your risk is well below your limit. To capture more market gains, consider <strong>increasing</strong> exposure to: ${growthSectors.join(", ")}.`;
+        }
     }
-    else{
-        recommendation.innerHTML += ` <br> ✅ You are within your risk tolerance`;
+    else {
+        recommendation.innerHTML += ` <br> ✅ Your current stock mix is well-aligned with your risk tolerance.`;
     }
-    //sharpe ratio recommendations
-    if (sharpe_ratio!= null){
-        if (sharpe_ratio < 0.5){
-           recommendation.innerHTML += `<br>  <strong>Overall:</strong> Your portfolio is sub-optimal. You are taking on high volatility for relatively low returns. Consider diversifying into uncorrelated sectors to improve your risk-adjusted performance.` 
+    //recommendation on each stock
+    if (to_short.length > 0) {
+        recommendation.innerHTML += `<br>✂️ <strong>Suggested Trims:</strong> ${to_short.join(", ")} (Reducing these will help hit your Beta target of ${tol}).`;
+    }
+    
+    if (to_long.length > 0 && p_beta < (tol * 0.8)) {
+        recommendation.innerHTML += `<br>➕ <strong>Suggested Adds:</strong> ${to_long.join(", ")} (Increasing these can capture more market upside).`;
+    }
+    if (sec_arr[worst].Beta < 0 && Number(market_move.value) > 0) {
+        recommendation.innerHTML += `<br>⚠️ <strong>Liability Alert:</strong> ${sec_arr[worst].Name} is shorting a rising market. This is a strategic drag.`;
+    }
+    //sharpe ratio
+    if (sharpe_ratio != null) {
+        if (sharpe_ratio < 0) {
+            recommendation.innerHTML += `<br>🛑 <strong>Strategic Pivot:</strong> Your risk-adjusted return is negative. It is mathematically better to hold <strong>Risk-Free Assets</strong> (Cash) until efficiency improves.`;
+        } 
+        else if (sharpe_ratio < 0.5) {
+            recommendation.innerHTML += `<br>⚖️ <strong>Overall:</strong> Your portfolio is <strong>sub-optimal</strong>. You are taking on high volatility for relatively low returns. Consider diversifying.`;
+        } 
+        else if (sharpe_ratio < 1.0) {
+            recommendation.innerHTML += `<br>✨ <strong>Overall:</strong> Your portfolio is <strong>efficient</strong>. You have a healthy risk-to-reward balance.`;
         }
-        else if (sharpe_ratio > 0.5 && sharpe_ratio < 1){
-           recommendation.innerHTML += `<br>  <strong>Overall:</strong> Your portfolio is efficient. You have a healthy risk-to-reward balance, and your returns are effectively compensating you for the market volatility you are experiencing.`
-        }
-        else{
-           recommendation.innerHTML += `<br>  <strong>Overall:</strong> Your portfolio is highly optimized. You are achieving exceptional returns relative to the risk taken. This setup demonstrates excellent diversification and efficiency.`
+        else {
+            recommendation.innerHTML += `<br>💎 <strong>Overall:</strong> Your portfolio is <strong>highly optimized</strong>. Excellent risk management.`;
         }
     }
-
-
 }
+
+
 
