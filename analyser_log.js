@@ -130,7 +130,7 @@ function check_total_investment(){
     if (total_investment.value < 0){
         total_investment.value = 0;
     }
-    if (total_investment == ""){
+    if (total_investment.value == ""){
         return false;
     }
     return true;
@@ -339,10 +339,12 @@ runBtn.addEventListener("click", function(){
     let total_impact = 0;
     let portfolio_beta = 0;
     let total_weight = 0;
+    const sector_arr = [];
     const portfolio_map = new Map();
     for (let i = 0; i < nameInputs.length; i++) {
     let name = nameInputs[i].value.toLowerCase().trim();
     total_weight += Number(weightInputs[i].value);
+    //portofolio map object set up and pass into array
     portfolio_map.set(name, {weight: Number(weightInputs[i].value), beta: 0});
     }
     let remaining_cash = 100 - total_weight;
@@ -356,12 +358,20 @@ runBtn.addEventListener("click", function(){
     }
     }
 
-    portfolio_map.forEach((data) => {
-      total_impact += getshockvalue(data.weight, data.beta);
+    portfolio_map.forEach((data,name) => {
+      let sector_return = getshockvalue(100,data.beta);
+      let weighted_return = getshockvalue(data.weight, data.beta);
+      
+      sector_arr.push({
+        Name: name,
+        Sector_r: sector_return,
+        Weighted_r: weighted_return,
+        Beta: data.beta
+      });
 
+      total_impact += weighted_return
       portfolio_beta += (data.weight / 100) * data.beta;
     });
-
     // 3. UI update
     let final_vol = portfolio_SD_val();
     total_impact += remaining_cash * risk_free.value / 100;
@@ -370,7 +380,7 @@ runBtn.addEventListener("click", function(){
     if (total_impact >= 0){
         if (check_total_investment()){
             impact.innerHTML = `The total expected gain is ${total_impact.toFixed(2)} % <br>
-            The expected value of the portfolio will be ${expected_value.toFixed(1)}(by CAPM)`;
+            The expected value of the portfolio will be ${expected_value.toFixed(0)}(by CAPM)`;
         }
         else{
             impact.innerHTML = `The total expected gain is ${total_impact.toFixed(2)} % (by CAPM)`;
@@ -382,7 +392,7 @@ runBtn.addEventListener("click", function(){
         if (check_total_investment()){
             
             impact.innerHTML = `The total expected loss is ${total_impact.toFixed(2)} % <br>
-            The expected value of the portfolio will be ${expected_value.toFixed(1)} (by CAPM)`;            
+            The expected value of the portfolio will be ${expected_value.toFixed(0)} (by CAPM)`;            
         }
         else{
             impact.innerHTML = `The total expected gain is ${total_impact.toFixed(2)} %(by CAPM)`;
@@ -396,4 +406,7 @@ runBtn.addEventListener("click", function(){
         impact.innerHTML += `<br> The portfolio sharpe ratio is ${final_sharpe_ratio.toFixed(2)}`;
     }
     impact.innerHTML += `<br> The portfolio beta is ${portfolio_beta.toFixed(2)}`;
+
+    tolerance_and_impact(Number(tolerance.value),total_impact);
+    update_advisor(sector_arr,check_total_investment(),portfolio_beta,total_investment.value,tolerance.value,final_sharpe_ratio);
 });  
