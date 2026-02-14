@@ -54,20 +54,14 @@ function update_chart() {
     let label_html = "";
     let t_weight = 0;
 
+    // 1. Calculate total weight 
     for (let i = 0; i < weightInputs.length; i++) {
-        t_weight += Math.abs(Number(weightInputs[i].value)) || 0;
-    }
-    let scale;
-    if (t_weight > 100){
-        scale = 100/t_weight;
-    }
-    else {
-        scale = 1;
+        t_weight += Number(weightInputs[i].value) || 0;
     }
 
+    // 2. Build the chart segments
     for (let i = 0; i < weightInputs.length; i++) {
-        let raw_weight = Number(weightInputs[i].value) || 0;
-        let weight = Math.abs(raw_weight) * scale;
+        let weight = Number(weightInputs[i].value) || 0;
         let temp = nameInputs[i].value.trim();
         if (temp === "") temp = "Sector " + (i + 1); 
         
@@ -75,17 +69,18 @@ function update_chart() {
             let start = c;
             let end = c + weight;
             let color = colors[i % colors.length];
-
-            gradient_string += `${colors[i % colors.length]} ${start}% ${end}%, `;
-            label_html += `<div><span style="color:${color}">■</span> ${temp}: ${raw_weight}%</div>`;
+            gradient_string += `${color} ${start}% ${end}%, `;
+            label_html += `<div><span style="color:${color}">■</span> ${temp}: ${weight}%</div>`;
             c = end; 
         }
     }
+
+    // 3. Render logic
     if (gradient_string === "") {
         chart.style.background = "#ddd";
-        label.innerHTML = " No data entered ";
+        label.innerHTML = "No data entered";
     } else {
-        let final_list = gradient_string.slice(0, -2);
+        let final_list = gradient_string.slice(0, -2); // Remove trailing comma and space
         chart.style.background = `conic-gradient(${final_list}, #ddd ${c}% 100%)`;
         if (t_weight < 100) {
             let cash_amount = (100 - t_weight).toFixed(1);
@@ -117,8 +112,8 @@ container.addEventListener("input", function(e) {
         if (value > 100) {
             e.target.value = 100;
         }
-        if (value < -100) {
-            e.target.value = -100;
+        if (value < 0) {
+            e.target.value = 0;
         }
     }
     update_chart();
@@ -237,7 +232,15 @@ function valid_inputs() {
             alert("Error: All Sector names and weights must be filled!");
             return false;
         }
+        if (weightInputs[i].value <= 0){
+            alert("Error: All weight should be positive");
+            return false;
+        }
         total += Number(weightInputs[i].value);
+    }
+    if (total != 100){
+        alert("Error, the total weight should be 100% !");
+        return false;
     }
     // 2. Check Shock Side
     for (let j = 0; j < shock_rows.length; j++) {
@@ -288,7 +291,7 @@ function portfolio_SD_val(){
     }    
     let port_sd = 0;
     for (let i = 0; i < standard_deviation.length;i++){
-        port_sd = (Number(weightInputs[i].value) / 100) * Number(standard_deviation[i].value) + port_sd;
+        port_sd = Math.abs((Number(weightInputs[i].value) / 100)) * Number(standard_deviation[i].value) + port_sd;
     }
     return port_sd;
 }
@@ -301,8 +304,6 @@ function cal_sharper_ratio(port_sd,impact){
     let sharpe_ratio = (impact - rf) / port_sd;
     return sharpe_ratio;
 }
-
-
 // Attach listeners
 
 total_investment.addEventListener("input", check_total_investment);
@@ -406,7 +407,8 @@ runBtn.addEventListener("click", function(){
         impact.innerHTML += `<br> The portfolio sharpe ratio is ${final_sharpe_ratio.toFixed(2)}`;
     }
     impact.innerHTML += `<br> The portfolio beta is ${portfolio_beta.toFixed(2)}`;
-
+    recommendation.innerHTML = "";
     tolerance_and_impact(Number(tolerance.value),total_impact);
-    update_advisor(sector_arr,check_total_investment(),portfolio_beta,total_investment.value,tolerance.value,final_sharpe_ratio);
+    update_advisor(sector_arr,check_total_investment(),portfolio_beta,total_investment.value,tolerance.value,final_sharpe_ratio,
+    market_move.value);
 });  
