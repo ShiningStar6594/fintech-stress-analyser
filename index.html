@@ -7,40 +7,40 @@
     <title>FinTech Stress Tester</title>
 </head>
 <body>
-    <div class="dashboard-wrapper">
+    <div class="dashboard_wrapper">
         
-        <aside class="config-panel">
+        <aside class="config_panel">
             <h2>Scenario Settings</h2> 
             
-            <div class="macro-group">
-                <label for="market-move">Market Overall (S&P 500) %</label>
-                <input type="number" id="market-move" min = "-100" placeholder="e.g. -10">
+            <div class="macro_group">
+                <label for="market_move">Market Overall (S&P 500) %</label>
+                <input type="number" id="market_move" min = "-100" placeholder="e.g. -10">
 
                 <label for="Risk free rate">Risk free rate %</label>
                 <input type="number" id="risk_free_return" placeholder="e.g. 3.5">
 
-                <label for="total-investment">Total Investment ($)</label>
-                <input type="tel" id="total-investment" placeholder="Optional, (Numbers only)">
+                <label for="total_investment">Total Investment ($)</label>
+                <input type="tel" id="total_investment" placeholder="Optional, (Numbers only)">
             </div>
 
             <hr>
 
-            <div class="risk-group">
+            <div class="risk_group">
                 <label>Investor Risk Tolerance (1-10)</label>
-                <input type="range" id="risk-tolerance" min="1" max="10" value="5">
-                <p>Risk tolerance: <span id="tolerance-val">5</span>/10</p>
+                <input type="range" id="risk_tolerance" min="1" max="10" value="5">
+                <p>Risk tolerance: <span id="tolerance_val">5</span>/10</p>
             </div>
 
-            <div class="action-btns">
-                <button type="button" id="runBtn" class="btn-run">Run Stress Test</button>
-                <button type="button" id="resetBtn" class="btn-reset">Reset All</button>
+            <div class="action_btns">
+                <button type="button" id="runBtn" class="btn_run">Run Stress Test</button>
+                <button type="button" id="resetBtn" class="btn_reset">Reset All</button>
             </div>
         </aside>
 
-        <main class="analysis-area">
+        <main class="analysis_area">
             
-            <section class="portfolio-input-card">
-                <div class="section-header">
+            <section class="portfolio-input_card">
+                <div class="section_header">
                     <h3>Portfolio Composition</h3>
                     <div class="crud-btns">
                         <button type="button" id="addSectorBtn">+ Sector</button>
@@ -48,17 +48,17 @@
                     </div>
                 </div>
                 
-                <div id="portfolio-inputs">
-                    <div class="sector-row">
-                        <input type="text" class="sector-name" placeholder="Sector Name">
-                        <input type="number" class="sector-weight" min="0" placeholder="Weight %">
+                <div id="portfolio_inputs">
+                    <div class="sector_row">
+                        <input type="text" class="sector_name" placeholder="Sector Name">
+                        <input type="number" class="sector_weight" min="0" placeholder="Weight %">
                         <input type="number" class="sector_SD" placeholder="SD (Optional)">
                     </div>
                 </div>
             </section>
 
-            <section class="shock-input-card">
-                <div class="section-header">
+            <section class="shock_input_card">
+                <div class="section_header">
                     <h3>Systematic Risk (Betas)</h3>
                     <div class="crud-btns">
                         <button type="button" id="addShockBtn">+ Beta</button>
@@ -66,21 +66,21 @@
                     </div>
                 </div>
                 <div id="shock_container">
-                    <div class="scenario-controls">
+                    <div class="scenario_controls">
                         <input type="text" class="target" placeholder="Sector to shock">
                         <input type="number" class="shock" step="0.1" placeholder="Beta " min="-5" max="5" >
                     </div>
                 </div>
             </section>
 
-            <section class="output-display">
+            <section class="output_display">
                <div class="stats">
                    <h2 id="resultText">Impact: --</h2>
                        <h2 id="adviceText">Recommendation: ⚠️ <br> Assumption: Portfolio Volatility is calculated assuming Zero Correlation between sectors. 
                         <br>In reality, sectors often move together, which may result in higher actual volatility than shown.</h2>
                </div>
 
-               <div class="pie-container">
+               <div class="pie_container">
                       <div id="piechart"></div> <div id="label">
                       </div>
                 </div>
@@ -88,7 +88,7 @@
 
         </main>
     </div>
-        <div id="link_container">
+    <div id="link_container">
         <span id = "popup_update" class="fake_link">
             <br><br><br>
             Update log
@@ -130,4 +130,3 @@
     <script src="advisor_logic.js" ></script>
 </body>
 </html>
-
