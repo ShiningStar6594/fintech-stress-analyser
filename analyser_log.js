@@ -3,6 +3,7 @@
 const nameInputs = document.getElementsByClassName("sector-name");
 const weightInputs = document.getElementsByClassName("sector-weight");
 const container = document.getElementById("portfolio-inputs");
+const standard_deviation = document.getElementsByClassName("sector_SD");
 
 // 2. Main Control Buttons
 const add = document.getElementById("addSectorBtn");
@@ -17,6 +18,7 @@ const del_shock = document.getElementById("deleteShockBtn");
 const runBtn = document.getElementById("runBtn");
 const target = document.getElementsByClassName("target");
 const shock = document.getElementsByClassName("shock");
+
 
 // 4. Display/UI Elements
 const chart = document.getElementById("piechart");
@@ -33,6 +35,8 @@ const market_move = document.getElementById("market-move");
 const total_investment = document.getElementById("total-investment");
 const risk_free = document.getElementById("risk_free_return");
 
+
+
 //colour tables
 const colors = [
     "#dade05", "#ef0909", "#17cf10", "#11d6e0", "#e91fe9", 
@@ -41,15 +45,29 @@ const colors = [
     "#ff7f50", "#00ced1", "#ff1493", "#00ff00", "#ffd700", 
     "#4b0082", "#00fbff", "#7cfc00"
 ];
+const cash_colour = "#ddd";
 
 //chart logic
 function update_chart() {
     let c = 0;
     let gradient_string = "";
     let label_html = "";
+    let t_weight = 0;
 
     for (let i = 0; i < weightInputs.length; i++) {
-        let weight = Number(weightInputs[i].value) || 0;
+        t_weight += Math.abs(Number(weightInputs[i].value)) || 0;
+    }
+    let scale;
+    if (t_weight > 100){
+        scale = 100/t_weight;
+    }
+    else {
+        scale = 1;
+    }
+
+    for (let i = 0; i < weightInputs.length; i++) {
+        let raw_weight = Number(weightInputs[i].value) || 0;
+        let weight = Math.abs(raw_weight) * scale;
         let temp = nameInputs[i].value.trim();
         if (temp === "") temp = "Sector " + (i + 1); 
         
@@ -59,15 +77,20 @@ function update_chart() {
             let color = colors[i % colors.length];
 
             gradient_string += `${colors[i % colors.length]} ${start}% ${end}%, `;
-            label_html += `<div><span style="color:${color}">■</span> ${temp}: ${weight}%</div>`;
+            label_html += `<div><span style="color:${color}">■</span> ${temp}: ${raw_weight}%</div>`;
             c = end; 
         }
     }
     if (gradient_string === "") {
         chart.style.background = "#ddd";
+        label.innerHTML = " No data entered ";
     } else {
         let final_list = gradient_string.slice(0, -2);
         chart.style.background = `conic-gradient(${final_list}, #ddd ${c}% 100%)`;
+        if (t_weight < 100) {
+            let cash_amount = (100 - t_weight).toFixed(1);
+            label_html += `<div><span style="color:#ddd">■</span> Cash/Reserve: ${cash_amount}%</div>`;
+        }
     }
     label.innerHTML = label_html;
 }
@@ -94,8 +117,8 @@ container.addEventListener("input", function(e) {
         if (value > 100) {
             e.target.value = 100;
         }
-        if (value < 0) {
-            e.target.value = 0;
+        if (value < -100) {
+            e.target.value = -100;
         }
     }
     update_chart();
@@ -119,7 +142,7 @@ function addSector(){
         <div class="sector-row">
             <input type="text" class="sector-name" placeholder="Sector Name">
             <input type="number" class="sector-weight" min="0" placeholder="Weight %">
-            <input type="number" class="sector_SD" placeholder="Standard deviation">
+            <input type="number" class="sector_SD" placeholder="SD (Optional)">
         </div>`;
         if (nameInputs.length == 20){
             alert(" The maximum number of sectors is 20 !");
@@ -139,6 +162,9 @@ function deleteSector(){
     else{
         const rows = document.getElementsByClassName("sector-row");
         rows[rows.length - 1].remove();
+        if (shock_rows.length > nameInputs.length){
+            shock_container.lastElementChild.remove();
+        }
         return true;
     }
 }
@@ -151,8 +177,8 @@ function add_shock_sec() {
 
     const newRow = `
         <div class="scenario-controls">
-            <input type="text" class="target" placeholder="Sector to Shock">
-            <input type="number" class="shock" min="0" placeholder="Shock %">
+            <input type="text" class="target" placeholder="Sector to shock">
+            <input type="number" class="shock" step="0.1" placeholder="Beta " min="-5" max="5" >
         </div>`;
     
     shock_container.insertAdjacentHTML('beforeend', newRow);
@@ -213,16 +239,6 @@ function valid_inputs() {
         }
         total += Number(weightInputs[i].value);
     }
-
-    if (total > 100) {
-        alert("Error: Total weight is more than 100%!");
-        return false;
-    }
-    else if(total < 100){
-        alert("Error: Total weight is less than 100%!");
-        return false;
-    }
-
     // 2. Check Shock Side
     for (let j = 0; j < shock_rows.length; j++) {
         // Check raw strings for emptiness
@@ -244,15 +260,51 @@ function valid_inputs() {
 function getshockvalue(w,beta){
     const rf = Number(risk_free.value);
     const mm = Number(market_move.value);
+    if (rf == "" || mm == ""){
+        alert("Error, please enter the risk free and market rate ! ");
+        return;
+    }
     return w / 100 *(rf + beta*(mm - rf)) ;
+}
+
+//SD logics
+function portfolio_SD_check(){
+    let count = 0;
+    for (let i = 0; i < standard_deviation.length; i++){
+        if (standard_deviation[i].value.trim() != ""){
+            count++;            
+        }
+    }
+    if (count != 0 && count != standard_deviation.length){
+        alert("Error, please either fill all SD or leave all empty !");
+        return false;
+    }
+    return true;
+}
+
+function portfolio_SD_val(){
+    if (standard_deviation[0].value.trim() == ""){
+        return null;
+    }    
+    let port_sd = 0;
+    for (let i = 0; i < standard_deviation.length;i++){
+        port_sd = (Number(weightInputs[i].value) / 100) * Number(standard_deviation[i].value) + port_sd;
+    }
+    return port_sd;
+}
+
+function cal_sharper_ratio(port_sd,impact){
+    if (portfolio_SD_val() == null || port_sd == 0){
+        return null;
+    }
+    const rf = Number(risk_free.value);
+    let sharpe_ratio = (impact - rf) / port_sd;
+    return sharpe_ratio;
 }
 
 
 // Attach listeners
-add.addEventListener("click", addSector);
-del.addEventListener("click", deleteSector);
-add_shock.addEventListener("click", add_shock_sec);
-del_shock.addEventListener("click", del_shock_sec);
+
 total_investment.addEventListener("input", check_total_investment);
 re.addEventListener("click",function(){
     impact.textContent = "Impact: --";
@@ -268,53 +320,80 @@ re.addEventListener("click",function(){
     for (let i = 0; i < nameInputs.length;i++){
         nameInputs[i].value = "";
         weightInputs[i].value = "";
+        standard_deviation[i].value = "";
     }
+    market_move.value = "";
+    risk_free.value = "";
+    total_investment.value = "";
     tolerance_value.textContent = 5;
     tolerance.value = 5;
     reset_chart();
 })
 runBtn.addEventListener("click", function(){
     // 1. implement all the checkings
-    if (!valid_inputs() ||!check_duplicate_names(nameInputs) ||!check_duplicate_names(target) ||!check_for_names()){
+    if (!valid_inputs() ||!check_duplicate_names(nameInputs) ||!check_duplicate_names(target) ||!check_for_names()
+    || !portfolio_SD_check()){
         return;
     }
     // 2. calculation and logic
     let total_impact = 0;
+    let portfolio_beta = 0;
+    let total_weight = 0;
     const portfolio_map = new Map();
     for (let i = 0; i < nameInputs.length; i++) {
     let name = nameInputs[i].value.toLowerCase().trim();
-    let weight = Number(weightInputs[i].value);
-    portfolio_map.set(name, weight);
+    total_weight += Number(weightInputs[i].value);
+    portfolio_map.set(name, {weight: Number(weightInputs[i].value), beta: 0});
     }
+    let remaining_cash = 100 - total_weight;
 
     for (let j = 0; j < shock_rows.length; j++) {
     let tName = target[j].value.toLowerCase().trim();
     let sVal = Number(shock[j].value);
 
     if (portfolio_map.has(tName)) {
-        let weight = portfolio_map.get(tName);
-        total_impact += getshockvalue(weight, sVal);
+        portfolio_map.get(tName).beta = sVal;
     }
     }
+
+    portfolio_map.forEach((data) => {
+      total_impact += getshockvalue(data.weight, data.beta);
+
+      portfolio_beta += (data.weight / 100) * data.beta;
+    });
+
     // 3. UI update
+    let final_vol = portfolio_SD_val();
+    total_impact += remaining_cash * risk_free.value / 100;
+    let final_sharpe_ratio = cal_sharper_ratio(final_vol, total_impact);
+    let expected_value = Number(total_investment.value)*(1+total_impact/100);
     if (total_impact >= 0){
         if (check_total_investment()){
             impact.innerHTML = `The total expected gain is ${total_impact.toFixed(2)} % <br>
-            The expected value of the portfolio will be ${Number(total_investment.value)*(1+total_impact/100)}`;
+            The expected value of the portfolio will be ${expected_value.toFixed(1)}(by CAPM)`;
         }
         else{
-            impact.innerHTML = `The total expected gain is ${total_impact.toFixed(2)} %`;
+            impact.innerHTML = `The total expected gain is ${total_impact.toFixed(2)} % (by CAPM)`;
         }
     }
     else{
         total_impact *= -1;
+        
         if (check_total_investment()){
+            
             impact.innerHTML = `The total expected loss is ${total_impact.toFixed(2)} % <br>
-            The expected value of the portfolio will be ${Number(total_investment.value)*(1-total_impact/100)}`;
+            The expected value of the portfolio will be ${expected_value.toFixed(1)} (by CAPM)`;            
         }
         else{
-            impact.innerHTML = `The total expected gain is ${total_impact.toFixed(2)} %`;
+            impact.innerHTML = `The total expected gain is ${total_impact.toFixed(2)} %(by CAPM)`;
         }
+        total_impact *= -1;
     }
-
+    if (final_vol != null){
+        impact.innerHTML += `<br> The portfolio volatlity is ${final_vol.toFixed(2)}`;
+    }
+    if (final_sharpe_ratio != null){
+        impact.innerHTML += `<br> The portfolio sharpe ratio is ${final_sharpe_ratio.toFixed(2)}`;
+    }
+    impact.innerHTML += `<br> The portfolio beta is ${portfolio_beta.toFixed(2)}`;
 });  
