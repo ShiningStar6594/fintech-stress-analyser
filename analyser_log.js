@@ -35,6 +35,13 @@ const market_move = document.getElementById("market-move");
 const total_investment = document.getElementById("total-investment");
 const risk_free = document.getElementById("risk_free_return");
 
+// 7. windows
+const modal_instructions = document.getElementById("modal_instructions");
+const modal_update = document.getElementById("modal_update");
+const modal_author = document.getElementById("modal_author");
+const popup_update = document.getElementById("popup_update");
+const popup_instructions = document.getElementById("popup_instructions");
+const popup_author = document.getElementById("popup_author");
 
 
 //colour tables
@@ -412,3 +419,4 @@ runBtn.addEventListener("click", function(){
     update_advisor(sector_arr,check_total_investment(),portfolio_beta,total_investment.value,tolerance.value,final_sharpe_ratio,
     market_move.value);
 });  
+
