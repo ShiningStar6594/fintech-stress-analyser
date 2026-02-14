@@ -88,9 +88,46 @@
 
         </main>
     </div>
+        <div id="link_container">
+        <span id = "popup_update" class="fake_link">
+            <br><br><br>
+            Update log
+        </span>
+        <br>
+        <span id=  "popup_instructions" class="fake_link">
+            Instructions
+        </span>
+        <br>
+        <span id = "popup_author" class="fake_link">
+            Authors
+        </span>
+    </div>
+    <div id="modal_update" class="modal_window">
+   <div class="modal_content">
+        <span class="close_x" onclick="closeModal('modal_update')">&times;</span>
+        <h2>Update Log</h2>
+        <p>Version 1.0: Added the popup system!</p>
+      </div>
+    </div>
+
+    <div id="modal_instructions" class="modal_window">
+      <div class="modal_content">
+        <span class="close_x" onclick="closeModal('modal_instructions')">&times;</span>
+        <h2>Instructions</h2>
+      </div>
+    </div>
+
+    <div id="modal_author" class="modal_window">
+      <div class="modal_content">
+        <span class="close_x" onclick="closeModal('modal_author')">&times;</span>
+        <h2>About the Author</h2>
+      </div>
+    </div>
+
 
     <script src="analyser_log.js" ></script>
     <script src="button_hold.js" ></script>
     <script src="advisor_logic.js" ></script>
 </body>
 </html>
+
