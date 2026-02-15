@@ -19,7 +19,6 @@ const runBtn = document.getElementById("runBtn");
 const target = document.getElementsByClassName("target");
 const shock = document.getElementsByClassName("shock");
 
-
 // 4. Display/UI Elements
 const chart = document.getElementById("piechart");
 const label = document.getElementById("label");
@@ -418,5 +417,4 @@ runBtn.addEventListener("click", function(){
     update_advisor(sector_arr,check_total_investment(),portfolio_beta,total_investment.value,tolerance.value,final_sharpe_ratio,
     market_move.value);
 });  
-
 
