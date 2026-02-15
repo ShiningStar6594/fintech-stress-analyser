@@ -133,3 +133,5 @@ function update_advisor(sec_arr, have_total,p_beta, t_invest, tol,sharpe_ratio, 
 
 
 
+
+
