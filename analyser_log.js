@@ -43,8 +43,6 @@ const popup_update = document.getElementById("popup_update");
 const popup_instructions = document.getElementById("popup_instructions");
 const popup_author = document.getElementById("popup_author");
 
-
-
 //colour tables
 const colors = [
     "#dade05", "#ef0909", "#17cf10", "#11d6e0", "#e91fe9", 
@@ -115,7 +113,7 @@ total_investment.addEventListener("input", function(){
 
 //input check
 container.addEventListener("input", function(e) {
-    if (e.target.classList.contains("sector-weight")) {
+    if (e.target.classList.contains("sector_weight")) {
         let value = Number(e.target.value);
         if (value > 100) {
             e.target.value = 100;
@@ -142,7 +140,7 @@ function check_total_investment(){
 //buttons function
 function addSector(){
     const newRow = `
-        <div class="sector-row">
+        <div class="sector_row">
             <input type="text" class="sector_name" placeholder="Sector Name">
             <input type="number" class="sector_weight" min="0" placeholder="Weight %">
             <input type="number" class="sector_SD" placeholder="SD (Optional)">
@@ -179,7 +177,7 @@ function add_shock_sec() {
     }
 
     const newRow = `
-        <div class="scenario-controls">
+        <div class="scenario_controls">
             <input type="text" class="target" placeholder="Sector to shock">
             <input type="number" class="shock" step="0.1" placeholder="Beta " min="-5" max="5" >
         </div>`;
@@ -420,6 +418,5 @@ runBtn.addEventListener("click", function(){
     update_advisor(sector_arr,check_total_investment(),portfolio_beta,total_investment.value,tolerance.value,final_sharpe_ratio,
     market_move.value);
 });  
-
 
 
