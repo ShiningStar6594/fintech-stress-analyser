@@ -1,8 +1,8 @@
 //get IDs
 // 1. Portfolio Inputs
-const nameInputs = document.getElementsByClassName("sector-name");
-const weightInputs = document.getElementsByClassName("sector-weight");
-const container = document.getElementById("portfolio-inputs");
+const nameInputs = document.getElementsByClassName("sector_name");
+const weightInputs = document.getElementsByClassName("sector_weight");
+const container = document.getElementById("portfolio_inputs");
 const standard_deviation = document.getElementsByClassName("sector_SD");
 
 // 2. Main Control Buttons
@@ -12,7 +12,7 @@ const re = document.getElementById("resetBtn");
 
 // 3. Shock System (Dynamic)
 const shock_container = document.getElementById("shock_container");
-const shock_rows = document.getElementsByClassName("scenario-controls");
+const shock_rows = document.getElementsByClassName("scenario_controls");
 const add_shock = document.getElementById("addShockBtn"); 
 const del_shock = document.getElementById("deleteShockBtn");
 const runBtn = document.getElementById("runBtn");
@@ -27,12 +27,12 @@ const impact = document.getElementById("resultText");
 const recommendation = document.getElementById("adviceText");
 
 // 5. Risk system
-const tolerance = document.getElementById("risk-tolerance");
-const tolerance_value = document.getElementById("tolerance-val");
+const tolerance = document.getElementById("risk_tolerance");
+const tolerance_value = document.getElementById("tolerance_val");
 
 // 6. Marco system
-const market_move = document.getElementById("market-move");
-const total_investment = document.getElementById("total-investment");
+const market_move = document.getElementById("market_move");
+const total_investment = document.getElementById("total_investment");
 const risk_free = document.getElementById("risk_free_return");
 
 // 7. windows
@@ -42,6 +42,7 @@ const modal_author = document.getElementById("modal_author");
 const popup_update = document.getElementById("popup_update");
 const popup_instructions = document.getElementById("popup_instructions");
 const popup_author = document.getElementById("popup_author");
+
 
 
 //colour tables
@@ -419,5 +420,6 @@ runBtn.addEventListener("click", function(){
     update_advisor(sector_arr,check_total_investment(),portfolio_beta,total_investment.value,tolerance.value,final_sharpe_ratio,
     market_move.value);
 });  
+
 
 
