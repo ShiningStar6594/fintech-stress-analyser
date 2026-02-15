@@ -71,15 +71,16 @@
 }
 /* for phone*/
 @media screen and (max-width: 600px) {
-  #link-container {
+  #link_container {
     position: static;   
     text-align: center; 
     margin-top: 20px;  
   }
   
-  .fake-link {
+  .fake_link {
     font-size: 14px;    
   }
 }
+
 
 
