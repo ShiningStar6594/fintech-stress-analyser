@@ -26,8 +26,8 @@
             <hr>
 
             <div class="risk_group">
-                <label>Investor Risk Tolerance (1-10)</label>
-                <input type="range" id="risk_tolerance" min="1" max="10" value="5">
+                <label>Investor Risk Tolerance (0-10)</label>
+                <input type="range" id="risk_tolerance" min="0" max="10" step = "0.1" value="5">
                 <p>Risk tolerance: <span id="tolerance_val">5</span>/10</p>
             </div>
 
@@ -35,11 +35,25 @@
                 <button type="button" id="runBtn" class="btn_run">Run Stress Test</button>
                 <button type="button" id="resetBtn" class="btn_reset">Reset All</button>
             </div>
+            <div id="link_container">
+                <span id = "popup_update" class="fake_link" onclick="open_windows('modal_update')">
+                <br><br><br>
+                Update log
+                </span>
+                <br>
+                <span id=  "popup_instructions" class="fake_link" onclick="open_windows('modal_instructions')">
+                Instructions
+                </span>
+                <br>
+                <span id = "popup_author" class="fake_link" onclick="open_windows('modal_author')">
+                Authors
+                </span>
+            </div>
         </aside>
 
         <main class="analysis_area">
             
-            <section class="portfolio-input_card">
+            <section class="portfolio_input_card">
                 <div class="section_header">
                     <h3>Portfolio Composition</h3>
                     <div class="crud-btns">
@@ -76,8 +90,7 @@
             <section class="output_display">
                <div class="stats">
                    <h2 id="resultText">Impact: --</h2>
-                       <h2 id="adviceText">Recommendation: ⚠️ <br> Assumption: Portfolio Volatility is calculated assuming Zero Correlation between sectors. 
-                        <br>In reality, sectors often move together, which may result in higher actual volatility than shown.</h2>
+                       <h2 id="adviceText">Recommendation: --</h2>
                </div>
 
                <div class="pie_container">
@@ -88,39 +101,71 @@
 
         </main>
     </div>
-    <div id="link_container">
-        <span id = "popup_update" class="fake_link">
-            <br><br><br>
-            Update log
-        </span>
-        <br>
-        <span id=  "popup_instructions" class="fake_link">
-            Instructions
-        </span>
-        <br>
-        <span id = "popup_author" class="fake_link">
-            Authors
-        </span>
-    </div>
+
     <div id="modal_update" class="modal_window">
    <div class="modal_content">
-        <span class="close_x" onclick="closeModal('modal_update')">&times;</span>
+        <span class="close_x" onclick="close_windows('modal_update')">&times;</span>
         <h2>Update Log</h2>
-        <p>Version 1.0: Added the popup system!</p>
+        <hr>
+        <p>Version 1.0: Launch of the financial stress analyser website </p>
       </div>
     </div>
 
     <div id="modal_instructions" class="modal_window">
       <div class="modal_content">
-        <span class="close_x" onclick="closeModal('modal_instructions')">&times;</span>
-        <h2>Instructions</h2>
+        <span class="close_x" onclick="close_windows('modal_instructions')">&times;</span>
+        <h2>Welcome to the portfolio stress analyser !</h2>
+        <hr>
+        <h3> Instructions </h3>
+        <p> In this analyzer, you must enter the risk-free rate,
+            the market move &nbsp; (in %), and the weight of each sector in your portfolio.
+            The total investment and sector betas are optional (sectors without a beta will be treated as cash). 
+            For standard deviation, either enter values for all sectors or leave the field completely empty. 
+            Ensure you set your tolerance so the analyzer can make decisions based on this information.
+        </p>
+        <br>
+        <h3> What to expect </h3>
+        <p> Based on the information provided, the analyzer will calculate the Sharpe ratio, 
+            expected gain/loss, expected portfolio value, portfolio beta, and portfolio volatility.
+            It will also identify your expected best and worst performers. 
+            Finally, it provides suggestions based on your tolerance, 
+            indicating which sectors you should short or long and whether the overall portfolio is meeting your targets.
+        </p>
+        <h3> ⚠️Assumption: </h3>
+        <p> Portfolio volatility is calculated assuming zero correlation between sectors. 
+            In reality, sectors often move together, which may result in higher actual volatility than shown here.
+        </p>
+        <h3> ⚠️ Disclaimer: </h3>
+        <p> All suggestions provided by this analyzer are generated purely through mathematical calculations.
+            These results do not constitute financial advice. 
+            The authors are not responsible for any financial losses or decisions made based on this tool. 
+            Please consult with a professional advisor before making investment decisions.
+        </p>
       </div>
     </div>
 
     <div id="modal_author" class="modal_window">
       <div class="modal_content">
-        <span class="close_x" onclick="closeModal('modal_author')">&times;</span>
-        <h2>About the Author</h2>
+        <span class="close_x" onclick="close_windows('modal_author')">&times;</span>
+        <h2>About the Authors</h2>
+        <hr>
+        <section style="margin-top: 20px;">
+           <div style="margin-bottom: 15px;">
+              <h3 style="margin-bottom: 5px;">Developer & Financial Modeler</h3>
+              <p style="margin: 0;">dummy1 — <a href="https://github.com/dummy1" target="_blank">GitHub</a></p>
+           </div>
+
+            <div style="margin-bottom: 15px;">
+              <h3 style="margin-bottom: 5px;">Finance Consultant & Advisor</h3>
+              <p style="margin: 0;">dummy2 — <a href="https://github.com/dummy2" target="_blank">GitHub</a></p>
+           </div>
+        </section>
+        <hr>
+        <h3> ⚠️ Disclaimer: </h3>
+        <p> All suggestions provided by this analyzer are generated purely through mathematical calculations.
+            These results do not constitute financial advice. 
+            The authors are not responsible for any financial losses or decisions made based on this tool. 
+            Please consult with a professional advisor before making investment decisions.</p>
       </div>
     </div>
 
@@ -128,5 +173,6 @@
     <script src="analyser_log.js" ></script>
     <script src="button_hold.js" ></script>
     <script src="advisor_logic.js" ></script>
+    <script src="windows.js" ></script>
 </body>
 </html>
