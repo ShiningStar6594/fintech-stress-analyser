@@ -142,8 +142,8 @@ function check_total_investment(){
 function addSector(){
     const newRow = `
         <div class="sector-row">
-            <input type="text" class="sector-name" placeholder="Sector Name">
-            <input type="number" class="sector-weight" min="0" placeholder="Weight %">
+            <input type="text" class="sector_name" placeholder="Sector Name">
+            <input type="number" class="sector_weight" min="0" placeholder="Weight %">
             <input type="number" class="sector_SD" placeholder="SD (Optional)">
         </div>`;
         if (nameInputs.length == 20){
@@ -162,7 +162,7 @@ function deleteSector(){
         return false;
     }
     else{
-        const rows = document.getElementsByClassName("sector-row");
+        const rows = document.getElementsByClassName("sector_row");
         rows[rows.length - 1].remove();
         if (shock_rows.length > nameInputs.length){
             shock_container.lastElementChild.remove();
@@ -419,4 +419,5 @@ runBtn.addEventListener("click", function(){
     update_advisor(sector_arr,check_total_investment(),portfolio_beta,total_investment.value,tolerance.value,final_sharpe_ratio,
     market_move.value);
 });  
+
 
