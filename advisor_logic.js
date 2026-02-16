@@ -56,10 +56,10 @@ function update_advisor(sec_arr, have_total, p_beta, t_invest, tol, sharpe_ratio
         recommendation.innerHTML += `<br>🚀 <strong>Top Performer:</strong> ${format_name(sec_arr[best].Name)} (${best_per}%)`;
     }
     if (check_sign(worst_per)) {
-        recommendation.innerHTML += `<br>📉 <strong>Biggest Drag:</strong> ${format_name(sec_arr[worst].Name)} (+${worst_per}%)`;
+        recommendation.innerHTML += `<br>📉 <strong>Worst Performer:</strong> ${format_name(sec_arr[worst].Name)} (+${worst_per}%)`;
     }
     else {
-        recommendation.innerHTML += `<br>📉 <strong>Biggest Drag:</strong> ${format_name(sec_arr[worst].Name)} (${worst_per}%)`;
+        recommendation.innerHTML += `<br>📉 <strong>Worst Performer:</strong> ${format_name(sec_arr[worst].Name)} (${worst_per}%)`;
     }
     //portfolio risk
     let risk_label = "";
@@ -157,6 +157,7 @@ function update_advisor(sec_arr, have_total, p_beta, t_invest, tol, sharpe_ratio
         }
     }
 }
+
 
 
 
