@@ -406,7 +406,7 @@ runBtn.addEventListener("click", function(){
         total_impact *= -1;
     }
     if (final_vol != null){
-        impact.innerHTML += `<br> The portfolio volatlity is ${final_vol.toFixed(2)}`;
+        impact.innerHTML += `<br> The portfolio volatility is ${final_vol.toFixed(2)}`;
     }
     if (final_sharpe_ratio != null){
         impact.innerHTML += `<br> The portfolio sharpe ratio is ${final_sharpe_ratio.toFixed(2)}`;
@@ -417,5 +417,6 @@ runBtn.addEventListener("click", function(){
     update_advisor(sector_arr,check_total_investment(),portfolio_beta,total_investment.value,tolerance.value,final_sharpe_ratio,
     market_move.value);
 });  
+
 
 
