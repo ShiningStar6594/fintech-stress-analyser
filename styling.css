@@ -170,28 +170,53 @@ button {
 
 /* for phone*/
 /* Landscape Mode (Phone Rotated) */
-@media screen and (max-width: 932px) and (orientation: landscape) {
+/* Optimized Mobile Layout */
+@media screen and (max-width: 768px) and (orientation: landscape)  {
+  body {
+    padding: 10px; 
+  }
+
+
   .dashboard_wrapper {
-    display: grid;
-    grid-template-columns: 1fr 1fr; 
+    display: flex;
+    flex-direction: column;
     gap: 15px;
   }
-
-  .config_panel {
-    height: fit-content;
-    position: sticky;
-    top: 10px;
+  .config_panel, 
+  .portfolio_input_card, 
+  .shock_input_card, 
+  .output_display {
+    width: 100%;
+    padding: 15px; 
+  }
+  .sector_row, .scenario_controls {
+    flex-direction: column; 
+    gap: 10px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+  }
+  .sector_row input, .scenario_controls input {
+    width: 100% !important;
+    height: 45px;
   }
 
 
-  .modal_content {
-    max-height: 85vh;
-    width: 70%;
+  #link_container {
+    text-align: center;
+    border-top: 1px solid #ddd;
+    padding-top: 20px;
+  }
+
+  .fake_link {
+    display: block; 
+    padding: 10px 0;
+    font-size: 16px; 
   }
   #piechart {
-    width: 180px;
-    height: 180px;
+    width: 200px;
+    height: 200px;
   }
 }
+
 
 
