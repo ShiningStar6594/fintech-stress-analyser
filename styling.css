@@ -169,15 +169,29 @@ button {
 }
 
 /* for phone*/
-@media screen and (max-width: 600px) {
-  #link_container {
-    position: static;   
-    text-align: center; 
-    margin-top: 20px;  
+/* Landscape Mode (Phone Rotated) */
+@media screen and (max-width: 932px) and (orientation: landscape) {
+  .dashboard_wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr; 
+    gap: 15px;
   }
-  
-  .fake_link {
-    font-size: 14px;    
+
+  .config_panel {
+    height: fit-content;
+    position: sticky;
+    top: 10px;
+  }
+
+
+  .modal_content {
+    max-height: 85vh;
+    width: 70%;
+  }
+  #piechart {
+    width: 180px;
+    height: 180px;
   }
 }
+
 
