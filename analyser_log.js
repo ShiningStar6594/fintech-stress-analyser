@@ -385,11 +385,11 @@ runBtn.addEventListener("click", function(){
     let expected_value = Number(total_investment.value)*(1+total_impact/100);
     if (total_impact >= 0){
         if (check_total_investment()){
-            impact.innerHTML = `The total expected gain is ${total_impact.toFixed(2)} % <br>
-            The expected value of the portfolio will be ${expected_value.toFixed(0)}(by CAPM)`;
+            impact.innerHTML = `The total expected gain is ${Number(total_impact.toFixed(2))} % <br>
+            The expected value of the portfolio will be ${Number(expected_value.toFixed(0))}(by CAPM)`;
         }
         else{
-            impact.innerHTML = `The total expected gain is ${total_impact.toFixed(2)} % (by CAPM)`;
+            impact.innerHTML = `The total expected gain is ${Number(total_impact.toFixed(2))} % (by CAPM)`;
         }
     }
     else{
@@ -397,25 +397,24 @@ runBtn.addEventListener("click", function(){
         
         if (check_total_investment()){
             
-            impact.innerHTML = `The total expected loss is ${total_impact.toFixed(2)} % <br>
-            The expected value of the portfolio will be ${expected_value.toFixed(0)} (by CAPM)`;            
+            impact.innerHTML = `The total expected loss is ${Number(total_impact.toFixed(2))} % <br>
+            The expected value of the portfolio will be ${Number(expected_value.toFixed(0))} (by CAPM)`;            
         }
         else{
-            impact.innerHTML = `The total expected gain is ${total_impact.toFixed(2)} %(by CAPM)`;
+            impact.innerHTML = `The total expected loss is ${Number(total_impact.toFixed(2))} %(by CAPM)`;
         }
         total_impact *= -1;
     }
     if (final_vol != null){
-        impact.innerHTML += `<br> The portfolio volatility is ${final_vol.toFixed(2)}`;
+        impact.innerHTML += `<br> The portfolio volatility is ${Number(final_vol.toFixed(2))}`;
     }
     if (final_sharpe_ratio != null){
-        impact.innerHTML += `<br> The portfolio sharpe ratio is ${final_sharpe_ratio.toFixed(2)}`;
+        impact.innerHTML += `<br> The portfolio sharpe ratio is ${Number(final_sharpe_ratio.toFixed(2))}`;
     }
-    impact.innerHTML += `<br> The portfolio beta is ${portfolio_beta.toFixed(2)}`;
+    impact.innerHTML += `<br> The portfolio beta is ${Number(portfolio_beta.toFixed(2))}`;
     recommendation.innerHTML = "";
     tolerance_and_impact(Number(tolerance.value),total_impact);
     update_advisor(sector_arr,check_total_investment(),portfolio_beta,total_investment.value,tolerance.value,final_sharpe_ratio,
     market_move.value);
 });  
-
 
