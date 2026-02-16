@@ -307,7 +307,7 @@ function cal_sharper_ratio(port_sd,impact){
     }
     const rf = Number(risk_free.value);
     let sharpe_ratio = (impact - rf) / port_sd;
-    return sharpe_ratio;
+    return sharpe_ratio / 100;
 }
 // Attach listeners
 
@@ -417,4 +417,5 @@ runBtn.addEventListener("click", function(){
     update_advisor(sector_arr,check_total_investment(),portfolio_beta,total_investment.value,tolerance.value,final_sharpe_ratio,
     market_move.value);
 });  
+
 
