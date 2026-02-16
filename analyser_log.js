@@ -331,8 +331,8 @@ re.addEventListener("click",function(){
     market_move.value = "";
     risk_free.value = "";
     total_investment.value = "";
-    tolerance_value.textContent = 5;
-    tolerance.value = 5;
+    tolerance_value.textContent = 1.5;
+    tolerance.value = 1.5;
     reset_chart();
 })
 runBtn.addEventListener("click", function(){
@@ -417,4 +417,5 @@ runBtn.addEventListener("click", function(){
     update_advisor(sector_arr,check_total_investment(),portfolio_beta,total_investment.value,tolerance.value,final_sharpe_ratio,
     market_move.value);
 });  
+
 
