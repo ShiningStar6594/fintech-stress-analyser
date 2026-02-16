@@ -369,7 +369,7 @@ runBtn.addEventListener("click", function(){
       let weighted_return = getshockvalue(data.weight, data.beta);
       
       sector_arr.push({
-        Name: name,
+        Name: format_name(name),
         Sector_r: sector_return,
         Weighted_r: weighted_return,
         Beta: data.beta
@@ -417,6 +417,5 @@ runBtn.addEventListener("click", function(){
     update_advisor(sector_arr,check_total_investment(),portfolio_beta,total_investment.value,tolerance.value,final_sharpe_ratio,
     market_move.value);
 });  
-
 
 
