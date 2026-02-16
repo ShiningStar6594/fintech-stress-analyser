@@ -1,10 +1,13 @@
 //General recommendation
 function tolerance_and_impact(tol, impact) {
-    if (impact > tol) {
+    const rf = Number(risk_free.value);
+    const mm = Number(market_move.value);
+    const expected_return = rf + tol * (mm - rf);
+    if (impact < expected_return) {
         recommendation.innerHTML = ` ⚠️ Warning: The expected return is lower than your target, adjustments maybe needed !`;
     }
-    else if (impact == tol) {
-        recommendation.innerHTML = ` ⚠️ Warning: The expected return is exactly equals to your target, adjustments maybe needed !`;
+    else if (impact == expected_return) {
+        recommendation.innerHTML = ` ✅ Success: Your return perfectly matches the risk-adjusted target!`;
     }
     else {
         recommendation.innerHTML = ` ✅ Success: The expected return is higher than your target, please go through the following suggestions`;
@@ -157,6 +160,7 @@ function update_advisor(sec_arr, have_total, p_beta, t_invest, tol, sharpe_ratio
         }
     }
 }
+
 
 
 
