@@ -3,6 +3,10 @@ function tolerance_and_impact(tol, impact) {
     const rf = Number(risk_free.value);
     const mm = Number(market_move.value);
     const expected_return = rf + tol * (mm - rf);
+    if (rf == "" || mm == ""){
+        alert("Error, please enter the risk free and market rate ! ");
+        return;
+    }
     if (impact < expected_return) {
         recommendation.innerHTML = ` ⚠️ Warning: The expected return is lower than your target, adjustments maybe needed !`;
     }
@@ -160,6 +164,7 @@ function update_advisor(sec_arr, have_total, p_beta, t_invest, tol, sharpe_ratio
         }
     }
 }
+
 
 
 
