@@ -71,13 +71,13 @@ function update_advisor(sec_arr, have_total, p_beta, t_invest, tol, sharpe_ratio
     //portfolio risk
     let risk_label = "";
     if (p_beta > 1.2) {
-        risk_label = " 🛡️ Your portfolio is <strong>aggressive</strong>. This hedge acts as insurance against a market crash.";
+        risk_label = " 🛡️ Your portfolio is <strong>aggressive</strong>. It is highly sensitive to market movements and will likely outperform in bull markets but drop sharply during corrections.";
     }
     else if (p_beta > 0 && p_beta <= 1.2) {
         risk_label = " 📊 Your portfolio is <strong>market-aligned</strong>. This hedge will move you toward a 'Market Neutral' strategy.";
     }
     else if (p_beta < 0) {
-        risk_label = " ⚠️ Your portfolio is <strong>inverse/Hedged</strong>. This hedge will reduce your bet against the market.";
+        risk_label = " ⚠️ Your portfolio is <strong>Inverse-Correlated</strong>. It contains assets that typically rise when the broader market falls, providing a natural safety buffer.";
     }
     else {
         risk_label = " 🛡️ Your portfolio is within your risk tolerance";
@@ -164,6 +164,7 @@ function update_advisor(sec_arr, have_total, p_beta, t_invest, tol, sharpe_ratio
         }
     }
 }
+
 
 
 
