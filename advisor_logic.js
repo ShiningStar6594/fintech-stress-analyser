@@ -38,136 +38,83 @@ function tolerance_and_impact(tol, impact) {
 
 
 
-function update_advisor(sec_arr, have_total, p_beta, t_invest, tol, sharpe_ratio, market_move) {
+
+function update_advisor(sec_arr, have_total, p_beta, t_invest, tol, sharpe_ratio) {
     const length = sec_arr.length;
     let worst = 0;
     let best = 0;
-    let to_short = [];
-    let to_long = [];
-    //classify the stocks first
+    let high_beta_trims = [];
+    let growth_adds = [];
+
+    // 1. Identify key performers and move-makers
     for (let i = 0; i < length; i++) {
         let stock = sec_arr[i];
+        
+        // Logic for rebalancing suggestions
         if (p_beta > tol && stock.Beta > 1.0) {
-            to_short.push(stock.Name);
+            high_beta_trims.push(format_name(stock.Name));
+        } else if (p_beta < tol && stock.Beta > 0.5) {
+            growth_adds.push(format_name(stock.Name));
         }
-        else if (p_beta < tol && stock.Beta > 0.5) {
-            to_long.push(stock.Name);
-        }
+
         if (sec_arr[i].Weighted_r > sec_arr[best].Weighted_r) { best = i; }
         if (sec_arr[i].Weighted_r < sec_arr[worst].Weighted_r) { worst = i; }
     }
-    //find best and worst performer that affects the most
+
     let best_per = sec_arr[best].Weighted_r.toFixed(2);
     let worst_per = sec_arr[worst].Weighted_r.toFixed(2);
 
-    if (check_sign(best_per)) {
-        recommendation.innerHTML += `<br>🚀 <strong>Top Performer:</strong> ${format_name(sec_arr[best].Name)} (+${best_per}%)`;
-    }
-    else {
-        recommendation.innerHTML += `<br>🚀 <strong>Top Performer:</strong> ${format_name(sec_arr[best].Name)} (${best_per}%)`;
-    }
-    if (check_sign(worst_per)) {
-        recommendation.innerHTML += `<br>📉 <strong>Worst Performer:</strong> ${format_name(sec_arr[worst].Name)} (+${worst_per}%)`;
-    }
-    else {
-        recommendation.innerHTML += `<br>📉 <strong>Worst Performer:</strong> ${format_name(sec_arr[worst].Name)} (${worst_per}%)`;
-    }
-    //portfolio risk
+    // 2. Output Contributors
+    recommendation.innerHTML += `<br>🚀 <strong>Top Performer:</strong> ${format_name(sec_arr[best].Name)} (${best_per > 0 ? '+' : ''}${best_per}%)`;
+    recommendation.innerHTML += `<br>📉 <strong>Worst Performer:</strong> ${format_name(sec_arr[worst].Name)} (${worst_per > 0 ? '+' : ''}${worst_per}%)`;
+
+    // 3. Risk Labeling (Long-only logic)
     let risk_label = "";
     if (p_beta > 1.2) {
-        risk_label = " 🛡️ Your portfolio is <strong>aggressive</strong>. It is highly sensitive to market movements and will likely outperform in bull markets but drop sharply during corrections.";
+        risk_label = "🛡️ Your portfolio is <strong>aggressive</strong>. It is highly sensitive to market swings and aims for high growth.";
+    } else if (p_beta > 0 && p_beta <= 1.2) {
+        risk_label = "📊 Your portfolio is <strong>market-aligned</strong>. It is designed to track broader market performance closely.";
+    } else if (p_beta < 0) {
+        risk_label = "⚠️ Your portfolio is <strong>Inverse-Correlated</strong>. These assets act as a natural safety buffer by moving opposite to the market.";
+    } else {
+        risk_label = "✅ Your portfolio is within a conservative risk range.";
     }
-    else if (p_beta > 0 && p_beta <= 1.2) {
-        risk_label = " 📊 Your portfolio is <strong>market-aligned</strong>. This hedge will move you toward a 'Market Neutral' strategy.";
-    }
-    else if (p_beta < 0) {
-        risk_label = " ⚠️ Your portfolio is <strong>Inverse-Correlated</strong>. It contains assets that typically rise when the broader market falls, providing a natural safety buffer.";
-    }
-    else {
-        risk_label = " 🛡️ Your portfolio is within your risk tolerance";
-    }
-    recommendation.innerHTML += `<br> ${risk_label}`;
-    //base on portfolio beta
+    recommendation.innerHTML += `<br>${risk_label}`;
+
+    // 4. Rebalancing Logic
     if (p_beta > tol) {
-        let highBetaSectors = [];
-        for (let i = 0; i < sec_arr.length; i++) {
-            if (sec_arr[i].Beta > 1.0) {
-                highBetaSectors.push(format_name(sec_arr[i].Name));
-            }
+        recommendation.innerHTML += `<br>💡 <strong>Optimization:</strong> To lower risk to your ${tol} target, consider <strong>reducing</strong> exposure in: ${high_beta_trims.join(", ")}.`;
+        if (have_total) {
+            let reduction_estimate = ((p_beta - tol) / p_beta) * Number(t_invest);
+            recommendation.innerHTML += `<br>💰 <em>Action: Sell approx. <strong>$${reduction_estimate.toFixed(0)}</strong> from these sectors.</em>`;
         }
-        if (highBetaSectors.length > 0) {
-            recommendation.innerHTML += `<br> 💡 <strong>Optimization:</strong> To lower your risk to your target level, consider <strong>reducing</strong> your weight in: ${highBetaSectors.join(", ")}.`;
-            if (have_total) {
-                let reduction_estimate = ((p_beta - tol) / p_beta) * Number(t_invest);
-                recommendation.innerHTML += `<br> 💰 <em>Estimated action: Sell approximately <strong>$${reduction_estimate.toFixed(0)}</strong> total from these sectors.</em>`;
-            }
-            else {
-                let reduction_pct = ((p_beta - tol) / p_beta) * 100;
-                recommendation.innerHTML += `<br> 📊 <em>Estimated action: Reduce your total exposure to these sectors by <strong>${reduction_pct.toFixed(1)}%</strong>.</em>`;
-            }
-        }
-    }
-    else if (p_beta < (tol * 0.7)) {
-        let growthSectors = [];
-        let defensiveSectors = [];
-
-        for (let i = 0; i < sec_arr.length; i++) {
-            let stock = sec_arr[i];
-            let name = format_name(stock.Name);
-            if (stock.Beta > 1.2) { growthSectors.push(name); }
-            else if (stock.Beta < 0.5) { defensiveSectors.push(name); }
-        }
-        if (growthSectors.length > 0 && defensiveSectors.length > 0) {
-            recommendation.innerHTML += `<br> ⚖️ <strong>Strategic Pivot:</strong> Consider reducing defensive assets (<strong>${defensiveSectors.join(", ")}</strong>) to fund higher beta positions in: ${growthSectors.join(", ")}.`;
-        }
-        // --- Rotation fallback ---
-        else {
-            let sorted = [...sec_arr].sort(function (a, b) { return a.Weighted_r - b.Weighted_r; });
-            let exit1 = format_name(sorted[0].Name);
-            let best_index = length - 1;
-            while (best_index > 0 && sorted[best_index].Beta < 0.8) {
-                best_index--;
-            }
-            let top_performer_obj = sorted[best_index];
-            let top_performer = format_name(top_performer_obj.Name);
-
-            recommendation.innerHTML += `<br> 🔄 <strong>Rotation:</strong> Swap your laggard <strong>${exit1}</strong> for higher beta growth sectors.`;
-
-            if (top_performer_obj.Beta >= 0.8) {
-                recommendation.innerHTML += `<br> 📈 <strong>Momentum:</strong> Consider investing more in <strong>${top_performer}</strong> to boost your market exposure.`;
-            }
-        }
-    }
-    else {
-        recommendation.innerHTML += ` <br> ✅ Your current stock mix is well-aligned with your risk tolerance.`;
-    }
-    //recommendation on each stock
-    if (to_short.length > 0) {
-        recommendation.innerHTML += `<br>✂️ <strong>Suggested Trims:</strong> ${to_short.join(", ")} (Reducing these will help hit your Beta target of ${tol}).`;
+    } else if (p_beta < (tol * 0.7)) {
+        recommendation.innerHTML += `<br>⚖️ <strong>Strategic Pivot:</strong> Your portfolio is significantly more defensive than your tolerance. Consider redirecting funds to capture more upside.`;
+    } else {
+        recommendation.innerHTML += `<br>✅ Your current sector mix is well-aligned with your risk tolerance.`;
     }
 
-    if (to_long.length > 0 && p_beta < (tol * 0.8)) {
-        recommendation.innerHTML += `<br>➕ <strong>Suggested Adds:</strong> ${to_long.join(", ")} (Increasing these can capture more market upside).`;
-    }
+    // 5. Asset-Specific Warnings
     if (sec_arr[worst].Beta < 0 && Number(market_move.value) > 0) {
-        recommendation.innerHTML += `<br>⚠️ <strong>Liability Alert:</strong> ${sec_arr[worst].Name} is shorting a rising market. This is a strategic drag.`;
+        recommendation.innerHTML += `<br>⚠️ <strong>Liability Alert:</strong> ${format_name(sec_arr[worst].Name)} is providing protection but acting as a drag during this market rally.`;
     }
-    //sharpe ratio
+
+    // 6. Sharpe Ratio Grading (The "Efficiency" Score)
     if (sharpe_ratio != null) {
+        let efficiency_msg = "";
         if (sharpe_ratio < 0) {
-            recommendation.innerHTML += `<br>🛑 <strong>Strategic Pivot:</strong> Your risk-adjusted return is negative. It is mathematically better to hold <strong>Risk-Free Assets</strong> (Cash) until efficiency improves.`;
+            efficiency_msg = "🛑 <strong>Strategic Pivot:</strong> Risk-adjusted return is negative. It is mathematically better to hold cash until efficiency improves.";
+        } else if (sharpe_ratio < 0.5) {
+            efficiency_msg = "⚖️ <strong>Overall:</strong> Portfolio is <strong>sub-optimal</strong>. You are taking high volatility for low relative returns.";
+        } else if (sharpe_ratio < 1.0) {
+            efficiency_msg = "✨ <strong>Overall:</strong> Portfolio is <strong>efficient</strong>. Good risk-to-reward balance.";
+        } else {
+            efficiency_msg = "💎 <strong>Overall:</strong> Portfolio is <strong>highly optimized</strong>. Excellent risk management.";
         }
-        else if (sharpe_ratio < 0.5) {
-            recommendation.innerHTML += `<br>⚖️ <strong>Overall:</strong> Your portfolio is <strong>sub-optimal</strong>. You are taking on high volatility for relatively low returns. Consider diversifying.`;
-        }
-        else if (sharpe_ratio < 1.0) {
-            recommendation.innerHTML += `<br>✨ <strong>Overall:</strong> Your portfolio is <strong>efficient</strong>. You have a healthy risk-to-reward balance.`;
-        }
-        else {
-            recommendation.innerHTML += `<br>💎 <strong>Overall:</strong> Your portfolio is <strong>highly optimized</strong>. Excellent risk management.`;
-        }
+        recommendation.innerHTML += `<br><br>${efficiency_msg}`;
     }
 }
+
 
 
 
