@@ -414,8 +414,8 @@ runBtn.addEventListener("click", function(){
     impact.innerHTML += `<br> The portfolio beta is ${Number(portfolio_beta.toFixed(2))}`;
     recommendation.innerHTML = "";
     tolerance_and_impact(Number(tolerance.value),total_impact);
-    update_advisor(sector_arr,check_total_investment(),portfolio_beta,total_investment.value,tolerance.value,final_sharpe_ratio,
-    market_move.value);
+    update_advisor(sector_arr,check_total_investment(),portfolio_beta,total_investment.value,tolerance.value,final_sharpe_ratio);
 });  
+
 
 
