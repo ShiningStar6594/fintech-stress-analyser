@@ -1,4 +1,12 @@
 //General recommendation
+function check_sign(num) {
+    if (num >= 0) {
+        return true;
+    }
+    return false;
+}
+
+
 function tolerance_and_impact(tol, impact) {
     const rf = Number(risk_free.value);
     const mm = Number(market_move.value);
@@ -19,12 +27,6 @@ function tolerance_and_impact(tol, impact) {
 }
 
 
-function check_sign(num) {
-    if (num >= 0) {
-        return true;
-    }
-    return false;
-}
 
 function format_name(str) {
     if (str == "") {
@@ -164,6 +166,7 @@ function update_advisor(sec_arr, have_total, p_beta, t_invest, tol, sharpe_ratio
         }
     }
 }
+
 
 
 
