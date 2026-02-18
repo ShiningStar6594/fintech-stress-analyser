@@ -65,8 +65,17 @@ function update_advisor(sec_arr, have_total, p_beta, t_invest, tol, sharpe_ratio
     let worst_per = sec_arr[worst].Weighted_r.toFixed(2);
 
     // 2. Output Contributors
-    recommendation.innerHTML += `<br>🚀 <strong>Top Performer:</strong> ${format_name(sec_arr[best].Name)} (${best_per > 0 ? '+' : ''}${best_per}%)`;
-    recommendation.innerHTML += `<br>📉 <strong>Worst Performer:</strong> ${format_name(sec_arr[worst].Name)} (${worst_per > 0 ? '+' : ''}${worst_per}%)`;
+    if (check_sign(best_per)) {
+        recommendation.innerHTML += `<br>🚀 <strong>Top Performer:</strong> ${format_name(sec_arr[best].Name)} (+${best_per}%)`;
+    } else {
+        recommendation.innerHTML += `<br>🚀 <strong>Top Performer:</strong> ${format_name(sec_arr[best].Name)} (${best_per}%)`;
+    }
+
+    if (check_sign(worst_per)) {
+        recommendation.innerHTML += `<br>📉 <strong>Worst Performer:</strong> ${format_name(sec_arr[worst].Name)} (+${worst_per}%)`;
+    } else {
+        recommendation.innerHTML += `<br>📉 <strong>Worst Performer:</strong> ${format_name(sec_arr[worst].Name)} (${worst_per}%)`;
+    }
 
     // 3. Risk Labeling (Long-only logic)
     let risk_label = "";
@@ -114,6 +123,7 @@ function update_advisor(sec_arr, have_total, p_beta, t_invest, tol, sharpe_ratio
         recommendation.innerHTML += `<br><br>${efficiency_msg}`;
     }
 }
+
 
 
 
