@@ -6,6 +6,14 @@ function check_sign(num) {
     return false;
 }
 
+function format_name(str) {
+    if (str == "") {
+        return "";
+    }
+    str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+    return str;
+}
+
 
 function tolerance_and_impact(tol, impact) {
     const rf = Number(risk_free.value);
@@ -28,13 +36,7 @@ function tolerance_and_impact(tol, impact) {
 
 
 
-function format_name(str) {
-    if (str == "") {
-        return "";
-    }
-    str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-    return str;
-}
+
 
 function update_advisor(sec_arr, have_total, p_beta, t_invest, tol, sharpe_ratio, market_move) {
     const length = sec_arr.length;
@@ -166,6 +168,7 @@ function update_advisor(sec_arr, have_total, p_beta, t_invest, tol, sharpe_ratio
         }
     }
 }
+
 
 
 
